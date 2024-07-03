@@ -2,6 +2,13 @@
 importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js");
 
+// "Default" Firebase configuration (prevents errors)
+const defaultConfig = {
+  apiKey: true,
+  projectId: true,
+  messagingSenderId: true,
+  appId: true,
+};
 const firebaseConfig = {
   apiKey: "AIzaSyBLnmGOHSGiiYVV_rEiGk6QZdGccoMB5GE",
   authDomain: "kerakollclub.firebaseapp.com",
@@ -22,19 +29,16 @@ self.addEventListener('fetch', () => {
   }
 });
 
-// "Default" Firebase configuration (prevents errors)
-const defaultConfig = {
-  apiKey: true,
-  projectId: true,
-  messagingSenderId: true,
-  appId: true,
-};
+
 // Initialize Firebase app
 firebase.initializeApp(self.firebaseConfig || defaultConfig);
 let messaging;
-try {
+try 
+{
    messaging = firebase.messaging.isSupported() ? firebase.messaging() : null
-} catch (err) {
+} 
+catch (err) 
+{
   console.error('Failed to initialize Firebase Messaging', err);
 }
 
@@ -52,19 +56,28 @@ if (messaging) {
       },
       icon: payload.notification?.image,
     }
-    // Optional
-       /*
-        * This condition is added because notification triggers from firebase messaging console doesn't handle image by default.
-        * collapseKey comes only when the notification is triggered from firebase messaging console and not from hitting fcm google api.
-        */
-        if (payload?.collapseKey && payload?.notification?.image) {
+        if (payload?.collapseKey && payload?.notification?.title) 
+        {
           self.registration.showNotification(notificationTitle, notificationOptions);
-        } else {
-           // Skipping the event handling for notification
+        } 
+        else 
+        {
            return new Promise(function(resolve, reject) {});
         }
     });
-  } catch (err) {
+  } catch (err) 
+  {
     console.log(err);
   }
 }
+/*
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  const title = data.title;
+  const options = {
+    body: data.message,
+    icon: '/icon.png',
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+*/
